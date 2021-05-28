@@ -35,7 +35,7 @@ client.categories = fs.readdirSync("./commands/");
     require(`./handlers/${handler}`)(client);
 }); 
 
-// ----------------- SCHEMAS ------------------ //
+// ----------------- SCHEMAS ------------------  //
 client.welcomeRoleScheme = mongoose.model('welcomeRole',
     new mongoose.Schema({
         Guild : String,
