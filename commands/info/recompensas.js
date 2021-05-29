@@ -8,10 +8,10 @@ module.exports = {
     run: async (client, message, args) => {
         const channel = message.channel
 
-        const e1 = message.member.guild.emojis.cache.find(emoji => emoji.name === '1')
-        const e2 = message.member.guild.emojis.cache.find(emoji => emoji.name === '2')
-        const e3 = message.member.guild.emojis.cache.find(emoji => emoji.name === '3')
-        const e4 = message.member.guild.emojis.cache.find(emoji => emoji.name === '4')
+        const e1 = message.member.guild.emojis.cache.find(emoji => emoji.name === '1_')
+        const e2 = message.member.guild.emojis.cache.find(emoji => emoji.name === '2_')
+        const e3 = message.member.guild.emojis.cache.find(emoji => emoji.name === '3_')
+        const e4 = message.member.guild.emojis.cache.find(emoji => emoji.name === '4_')
         const e6 = message.member.guild.emojis.cache.find(emoji => emoji.name === '6_')
         const slp = message.member.guild.emojis.cache.find(emoji => emoji.name === 'slp')
         const axs = message.member.guild.emojis.cache.find(emoji => emoji.name === 'axs')
