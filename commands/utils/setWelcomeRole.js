@@ -8,6 +8,7 @@ module.exports = {
     run: async (client, message, args) => {
         const guildId = message.channel.guild.id
 
+        if(!message.guild.me.hasPermission('ADMINISTRATOR')) return message.reply('Você não tem permissão!')
         if(!(args.length > 0)) return message.reply(`Para setar um cargo como padrão, envie ${prefix}setwelcomerole @Role`)
         const role = message.channel.guild.roles.cache.find(role => `<@&${role.id}>` === args[0])
         if(!role) return message.reply(`Esse cargo não existe!`)        
