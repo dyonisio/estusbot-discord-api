@@ -8,8 +8,9 @@ module.exports = {
     run: async (client, message, args) => {
         const guildId = message.channel.guild.id
 
-        if(!message.guild.me.hasPermission('ADMINISTRATOR')) return message.reply('Você não tem permissão!')
-        if(!(args.length > 0)) return message.reply(`Para setar canal como padrão, envie ${prefix}setnewvideos @Canal`)
+        if(!message.member.permissions.has('ADMINISTRATOR')) return message.reply('Você não tem permissão!')
+        if(!message.guild.me.hasPermission('ADMINISTRATOR')) return message.reply('O bot não tem permissão!')
+        if(!(args.length > 0)) return message.reply(`Para setar canal como padrão, envie ${prefix}setnewvideos #Canal`)
         const channel = message.guild.channels.cache.find(channel => `<#${channel.id}>` === args[0])
         if(!channel) return message.reply(`Esse canal não existe!`)        
 
