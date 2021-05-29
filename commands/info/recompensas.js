@@ -16,10 +16,11 @@ module.exports = {
         const slp = message.member.guild.emojis.cache.find(emoji => emoji.name === 'slp')
         const axs = message.member.guild.emojis.cache.find(emoji => emoji.name === 'axs')
         const stonks = message.member.guild.emojis.cache.find(emoji => emoji.name === 'stonks')
+        const youtube = message.member.guild.emojis.cache.find(emoji => emoji.name === 'youtube')
 
 
         channel.send(`
-        :youtube: BENEFÍCIOS DO CLUBE :youtube:
+        ${youtube} BENEFÍCIOS DO CLUBE ${youtube}
 
 ${e1}     ${e2}     ${e3}     ${e4}     ${e6}
 
