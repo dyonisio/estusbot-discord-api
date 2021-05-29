@@ -43,6 +43,13 @@ client.welcomeRoleScheme = mongoose.model('welcomeRole',
     })
 ) 
 
+client.newVideoScheme = mongoose.model('newVideo',
+    new mongoose.Schema({
+        Guild : String,
+        Channel: String  
+    })
+) 
+
 
 // ----------------- ROUTES ------------------ //
 app.get(`/api`, async (req, res) => {
@@ -53,7 +60,38 @@ app.get(`/api`, async (req, res) => {
 })
 
 app.get(`/api/webhook`, async (req, res) => {
-    console.log(req.query['id'])
+    const publishedAt = req.query['publishedAt']
+    const title = req.query['title']
+    const channelName = req.query['channelName']
+    const url = req.query['url']
+    const urlAvatar = req.query['urlAvatar']
+    const thumbVideo = `http://i3.ytimg.com/vi/${url.replace(/https:\/\/youtu.be\//g, '')}/maxresdefault.jpg`
+
+    console.log(thumbVideo)
+
+    const embed = new Discord.MessageEmbed()
+                .setAuthor(channelName, urlAvatar)
+                .setTitle(`${title}`)
+                .setURL(url)
+                .setThumbnail(urlAvatar)
+                .setColor('#868DAC')
+                .setImage(thumbVideo)
+                .setFooter(`Notificação de Video!`)
+                .setTimestamp()
+
+    client.newVideoScheme.find({}, async(err, data) => {
+        if(err) throw err
+        data.map(guild => {
+            client.guilds.fetch(guild.Guild).then(function(result){
+                result.channels.cache.map(chn => {
+                    if(chn.id === guild.Channel)
+                    chn.send(`Eeeeei @everyone! Tem video novo do Estus ${url} ! Bora assistir :wink:!`, {embed: embed})
+                })
+            })
+        })
+    })
+
+    res.sendStatus(200)
     
 })
 
