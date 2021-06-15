@@ -108,7 +108,7 @@ app.post(`/api/webhook/youtube`, async (req, res) => {
 })
 
 app.get(`/api/videopa`, async (req, res) => {
-    res.redirect(301, 'http://www.youtube.com')
+    res.redirect(301, 'https://youtu.be/PwKaByhn9b0')
 })
 
 app.get(`/api/webhook/tradesp2p`, async (req, res) => {
