@@ -14,7 +14,7 @@ module.exports = {
         const embed = new MessageEmbed()
                 .setAuthor(message.member.user.tag, message.member.user.displayAvatarURL())
                 .setTitle(`${emoji} Farm ${emoji}`)
-                .setImage('https://media.discordapp.net/attachments/746019522858844271/830816489933635584/Uncle_1.png')
+                .setImage('https://cdn.discordapp.com/attachments/847159202010890271/849669293556629534/attach.png')
                 .setColor('#00B7CC')
                 .setTimestamp()
 

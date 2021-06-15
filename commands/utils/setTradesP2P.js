@@ -1,0 +1,34 @@
+const Discord = require("discord.js")
+const { MessageEmbed } = require('discord.js')
+const prefix = require("../../config.json").prefix;
+
+module.exports = {
+    name: "settradesp2p",
+    category : 'utils',
+    run: async (client, message, args) => {
+        const guildId = message.channel.guild.id
+
+        if(!message.member.permissions.has('ADMINISTRATOR')) return message.reply('Você não tem permissão!')
+        if(!message.guild.me.hasPermission('ADMINISTRATOR')) return message.reply('O bot não tem permissão!')
+        if(!(args.length > 0)) return message.reply(`Para setar canal como padrão de avisos de TradeP2P, envie ${prefix}settradesp2p #Canal`)
+        const channel = message.guild.channels.cache.find(channel => `<#${channel.id}>` === args[0])
+        if(!channel) return message.reply(`Esse canal não existe!`)        
+
+        client.tradesP2PScheme.findOne({
+            Guild : guildId,
+        }, async(err, data) => {
+            if(err) throw err
+            if(data){
+                data.Guild = guildId
+                data.Channel = channel.id
+            } else {
+                data = new client.tradesP2PScheme({
+                    Guild : guildId,
+                    Channel: channel.id
+                })
+            }
+            await data.save().catch(err => console.log(err))
+            message.reply('Canal setado com sucesso!')
+        })
+    }  
+}

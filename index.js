@@ -1,14 +1,13 @@
 const express = require('express')
 const app = express()
 const fs = require('fs-extra')
+const bodyParser = require('body-parser');
 
 const dotenv = require('dotenv');
 dotenv.config();
 
 var morgan = require('morgan')
 app.use(morgan('dev'))
-
-let { sendError } = require('./utils/')
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
@@ -17,6 +16,10 @@ Initialized API!
 Acesss in port ${port}`)
 });
 
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+let { sendError } = require('./utils/')
 const mongoose = require('mongoose');
 mongoose.connect(`mongodb+srv://estusbot:${process.env.PASS_DB}@dyobot.u42fj.mongodb.net/Data`, {
     useUnifiedTopology: true,
@@ -25,7 +28,7 @@ mongoose.connect(`mongodb+srv://estusbot:${process.env.PASS_DB}@dyobot.u42fj.mon
 
 const config = require("./config.json")
 const { response } = require("express")
-const Discord = require("discord.js")
+const Discord = require("discord.js");
 const client = new Discord.Client()
 
 client.commands = new Discord.Collection()
@@ -50,6 +53,12 @@ client.newVideoScheme = mongoose.model('newVideo',
     })
 ) 
 
+client.tradesP2PScheme = mongoose.model('tradesP2P',
+    new mongoose.Schema({
+        Guild : String,
+        Channel: String  
+    })
+) 
 
 // ----------------- ROUTES ------------------ //
 app.get(`/api`, async (req, res) => {
@@ -59,16 +68,17 @@ app.get(`/api`, async (req, res) => {
     res.sendStatus(200);
 })
 
-app.get(`/api/webhook`, async (req, res) => {
-    const publishedAt = req.query['publishedAt']
-    const title = req.query['title']
-    const channelName = req.query['channelName']
-    const url = req.query['url']
-    const urlAvatar = req.query['urlAvatar']
+app.post(`/api/webhook/youtube`, async (req, res) => {
+    console.log(req.body)
+
+    return
+    const publishedAt = req.body.publishedAt
+    const title = req.body.title
+    const channelName = req.body.channelName
+    const url = req.body.url
+    const urlAvatar = `https://yt3.ggpht.com/-ij0t9fQ7Z-0hnGrmGs_uYoUjPEVJRxcR7Pi_t-QtWlJKf2OuJmNNvWnq8JB3GUruVUiwYcOw5I=s900-c-k-c0x00ffffff-no-rj`
     const thumbVideo = `http://i3.ytimg.com/vi/${url.replace(/https:\/\/youtu.be\//g, '')}/maxresdefault.jpg`
-
-    console.log(thumbVideo)
-
+    
     const embed = new Discord.MessageEmbed()
                 .setAuthor(channelName, urlAvatar)
                 .setTitle(`${title}`)
@@ -80,19 +90,55 @@ app.get(`/api/webhook`, async (req, res) => {
                 .setTimestamp()
 
     client.newVideoScheme.find({}, async(err, data) => {
-        if(err) throw err
+        if(err) {
+            res.sendStatus(500).send(err)
+            return
+        }
         data.map(guild => {
             client.guilds.fetch(guild.Guild).then(function(result){
                 result.channels.cache.map(chn => {
-                    if(chn.id === guild.Channel)
-                    chn.send(`Eeeeei @everyone! Tem video novo do Estus ${url} ! Bora assistir :wink:!`, {embed: embed})
+                    if(chn.id === guild.Channel){
+                        chn.send(`Eeeeei @everyone! Tem video novo do Estus ${url} ! Bora assistir :wink:!`, {embed: embed})
+                        res.sendStatus(200)
+                    }
                 })
             })
         })
-    })
+    })  
+})
 
-    res.sendStatus(200)
-    
+app.get(`/api/videopa`, async (req, res) => {
+    res.redirect(301, 'http://www.youtube.com')
+})
+
+app.get(`/api/webhook/tradesp2p`, async (req, res) => {
+    client.tradesP2PScheme.find({}, async(err, data) => {
+        if(err) {
+            res.sendStatus(500).send(err)
+            return
+        }
+        data.map(guild => {
+            client.guilds.fetch(guild.Guild).then(function(result){
+                let emoji = result.emojis.cache.find(emoji => emoji.name === 'bangbang')
+                if(!emoji)
+                    emoji = ':bangbang:'
+                
+                const embed = new Discord.MessageEmbed()
+                    .setTitle(`${emoji} Canal pra anúncios de compra/venda de NFTs e tokens ${emoji}`)
+                    .setDescription(`Faça compras e vendas por sua conta e risco. Não compartilhe senhas ou informações pessoais com ninguém. Seja sempre cauteloso!`)
+                    .setColor('#6138CA')
+                    .setFooter(`Aviso!`)
+                    .setTimestamp()
+
+                result.channels.cache.map(chn => {
+                    if(chn.id === guild.Channel){
+                        chn.send(embed)
+                        res.sendStatus(200)
+                    }
+                })
+            })
+        })
+    })    
 })
 
 app.use((req, res) =>{
